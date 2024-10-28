@@ -31,7 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--attr_index', type=int, default=0)
 
     args = parser.parse_args()
-    args.save_imgs_dir = f"{args.save_imgs_dir}/{args.mode}_1026"
+    args.save_imgs_dir = f"{args.save_imgs_dir}/{args.mode}_1028_wq_lora"
     
     os.makedirs(args.save_imgs_dir, exist_ok=True)
     
