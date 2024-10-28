@@ -30,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument('--mode', type=str, default='exp_dev')
 
     args = parser.parse_args()
-    args.save_imgs_dir = f"{args.save_imgs_dir}/{args.mode}_1018"
+    args.save_imgs_dir = f"{args.save_imgs_dir}/{args.mode}_1026"
     
     os.makedirs(args.save_imgs_dir, exist_ok=True)
     
@@ -40,22 +40,38 @@ if __name__ == "__main__":
     neg_prompt = "bad quality, poor quality, doll, disfigured, jpg, toy, bad anatomy, missing limbs, missing fingers, 3d, cgi, Half-body."
     pre_prompt = 'Four images arranged in a 2x2 grid.'
     post_prompt = 'Ensure that the design elements, patterns, and colors of the clothing are consistent in the four postures, and the only difference is the visual angle.'
+    comp = 'simple'
 
-    attr_yml_files = ['/data/xd/MyCode/Project/exp_vs/data/yml/neckline.yml']
+    attr_yml_files = ['/data/xd/MyCode/Project/exp_vs/data/yml/neckline.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/collar.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/cuff.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/front_closure_style.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_closure.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_length.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/pocket.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve_length.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/shirt_hem.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/shoulder.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/silhouette.yml',
+                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve.yml']
+
+    lora_path = '/data/xd/MyCode/Project/exp_vs/weights/lora/model12/model12_ck14000.safetensors'
 
     for attr_yml_file in attr_yml_files:
+        attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
 
-        for attr in YMLDataIterator(attr_yml_file):
+        for attr in YMLDataIterator(attr_yml_file, 11):
+            attr = attr.replace('/', ' ')
             if attr.lower() == 'other': continue
-            prompt = f"In a clean and minimal setting, a full-body front view of a Chinese girl model, with arms fully extended horizontally to form a 90-degree angle with the torso, is presented.The model is wearing a {attr} T-shirt."
+            prompt = f"In a clean and minimal setting, a full-body front view of a Chinese girl model, is presented.The model is wearing a {attr} T-shirt."
 
             for p_index, prompt in enumerate([prompt, f"{pre_prompt} {prompt} {post_prompt}"]):
                 print(prompt)
 
                 if args.mode == 'exp_dev':              
-                    guidances = [3.5]
-                    img_seq_lens = [1.15]
-                    width, height = 768, 1024            
+                    guidances = [3.5] if p_index == 0 else [2.5]
+                    img_seq_lens = [1.15] if p_index == 0 else [0.4]
+                    width, height = 768, 768
                     seeds = [
                         5456756856,
                         9876543210,
@@ -68,33 +84,48 @@ if __name__ == "__main__":
                         789456123,
                         147852369
                     ]
+                    lora_weights = ['0', '0.9']
                     for seed in seeds:
                         for guidance in guidances:
                             for img_seq_len in img_seq_lens:    
-                                # 增加计时
-                                start_time = time.perf_counter()
-                                print("attr:{} seed:{}, guidance:{}, img_seq_len:{}".format(attr, seed, guidance, img_seq_len))
-                                out_img = pipeline(
-                                    prompt=prompt,
-                                    controlnet_image=None,
-                                    width=width * 2,
-                                    height=height * 2,
-                                    guidance=guidance,
-                                    num_steps=50,
-                                    true_gs=4,
-                                    neg_prompt=neg_prompt,
-                                    timestep_to_start_cfg=200,
-                                    seed=seed,
-                                    callback=None,
-                                    cb_infos=None,
-                                    progress_len=95,
-                                    img_seq_len=img_seq_len
-                                )
+                                mu = img_seq_len
+                                for lora_weight in lora_weights:
+                                    if lora_weight == '0.9':
+                                        ck_name = lora_path.split('/')[-1].split('.')[0]
+                                        f_width = 1024 * 2
+                                        f_height = 1024 * 2
+                                    else:
+                                        ck_name = 'dev'
+                                        f_width = 768
+                                        f_height = 768
 
-                                prompt_tag = "1grid" if p_index == 0 else "4grid"
-                                outfile = f"{args.save_imgs_dir}/ck_name@{ck_name}_promptTag@{prompt_tag}_attr@{attr}_seed@{seed}_guide@{guidance}_mu@{img_seq_len}.jpg"
-                                out_img.save(outfile, quality=95)
-                                end_time = time.perf_counter()
+                                    lora_weight = float(lora_weight)
+                                    pipeline.set_lora(lora_path, lora_weight=lora_weight)  
 
-                                elapsed_time_ms = (end_time - start_time) * 1000
-                                print(f"Elapsed time: {elapsed_time_ms} ms")
+                                    # 增加计时
+                                    start_time = time.perf_counter()
+                                    print("attr:{} seed:{}, guidance:{}, mu:{}, f_width:{}, f_height:{}, ck_name:{}, lora_weight:{}, attr_cate:{}, prompt:{}".format(attr, seed, guidance, mu, f_width, f_height, ck_name, lora_weight, attr_cate, prompt))
+                                    out_img = pipeline(
+                                        prompt=prompt,
+                                        controlnet_image=None,
+                                        width=f_width,
+                                        height=f_height,
+                                        guidance=guidance,
+                                        num_steps=50,
+                                        true_gs=4,
+                                        neg_prompt=neg_prompt,
+                                        timestep_to_start_cfg=200,
+                                        seed=seed,
+                                        callback=None,
+                                        cb_infos=None,
+                                        progress_len=95,
+                                        img_seq_len=mu
+                                    )
+
+                                    prompt_tag = "1grid" if p_index == 0 else "4grid"
+                                    outfile = f"{args.save_imgs_dir}/ck_name@{ck_name}_lora_weight@{lora_weight}_promptTag@{prompt_tag}_attr_cate@{attr_cate}_attr@{attr}_seed@{seed}_guide@{guidance}_mu@{mu}_resolution@{f_height}*{f_width}_comp@{comp}.jpg"
+                                    out_img.save(outfile, quality=95)
+                                    end_time = time.perf_counter()
+
+                                    elapsed_time_ms = (end_time - start_time) * 1000
+                                    print(f"Elapsed time: {elapsed_time_ms} ms")
