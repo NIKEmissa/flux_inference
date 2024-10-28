@@ -10,15 +10,20 @@ class YMLDataIterator:
         self.header_lines = header_lines
 
     def __iter__(self):
-        # 打开文件，并跳过表头部分
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            # 跳过表头
-            for _ in range(self.header_lines):
-                next(file)
-            
-            # 迭代数据行
-            for line in file:
-                yield line.strip()
+        if self.file_path == None:
+            print('no yml file')
+            for item in ['original']:
+                yield item
+        else:   
+            # 打开文件，并跳过表头部分
+            with open(self.file_path, 'r', encoding='utf-8') as file:
+                # 跳过表头
+                for _ in range(self.header_lines):
+                    next(file)
+                
+                # 迭代数据行
+                for line in file:
+                    yield line.strip()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -43,7 +48,9 @@ if __name__ == "__main__":
     post_prompt = 'Ensure that the design elements, patterns, and colors of the clothing are consistent in the four postures, and the only difference is the visual angle.'
     comp = 'complicated'
 
-    attr_yml_files = ['./data/yml/neckline.yml',
+    attr_yml_files = [
+                    None,
+                    './data/yml/neckline.yml',
                     './data/yml/collar.yml',
                     './data/yml/cuff.yml',
                     './data/yml/front_closure_style.yml',
@@ -71,12 +78,10 @@ if __name__ == "__main__":
         147852369
     ]
     for seed in seeds:
-
         for attr_yml_file in [attr_yml_files[args.attr_index]]:
-            attr_cate = attr_yml_file.split('/')[-1].split('.')[0] if int(seed) != 0 else 'original'
-
+            attr_cate = attr_yml_file.split('/')[-1].split('.')[0] if attr_yml_file != None else 'original'
             for attr in YMLDataIterator(attr_yml_file, 4):
-                attr = attr.replace('/', ' ')
+                attr = attr.replace('/', ' ') if attr_cate != 'original' else 'original'
                 
                 shirt_hem = 'asymmetrical hemline'
                 shoulder = 'regular shoulders'
