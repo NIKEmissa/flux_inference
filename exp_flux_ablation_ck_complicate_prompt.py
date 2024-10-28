@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     lora_path = './weights/lora/model12/model12_ck14000.safetensors'
 
-    for attr_yml_file in [attr_yml_files[attr_index]]:
+    for attr_yml_file in [attr_yml_files[args.attr_index]]:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
 
         for attr in YMLDataIterator(attr_yml_file, 4):
