@@ -59,6 +59,7 @@ if __name__ == "__main__":
                     './data/yml/sleeve.yml']
 
     lora_path = './weights/lora/model12/model12_ck14000.safetensors'
+    lora_path = './weights/lora/wangqiang_base_prompt/fashion_lora (9).safetensors'
     resolutions = [[1024, 1024], [512, 512]]
 
     for attr_yml_file in [attr_yml_files[args.attr_index]]:
