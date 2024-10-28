@@ -56,6 +56,7 @@ if __name__ == "__main__":
                     '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve.yml']
 
     lora_path = '/data/xd/MyCode/Project/exp_vs/weights/lora/model12/model12_ck14000.safetensors'
+    resolutions = [[1024, 1024], [512, 512]]
 
     for attr_yml_file in attr_yml_files:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
@@ -90,42 +91,45 @@ if __name__ == "__main__":
                             for img_seq_len in img_seq_lens:    
                                 mu = img_seq_len
                                 for lora_weight in lora_weights:
-                                    if lora_weight == '0.9':
-                                        ck_name = lora_path.split('/')[-1].split('.')[0]
-                                        f_width = 1024 * 2
-                                        f_height = 1024 * 2
-                                    else:
-                                        ck_name = 'dev'
-                                        f_width = 768
-                                        f_height = 768
+                                    for resolution in resolutions:
+                                        if lora_weight == '0.9':
+                                            ck_name = lora_path.split('/')[-1].split('.')[0]
+                                            # f_width = 1024 * 2
+                                            # f_height = 1024 * 2
+                                        else:
+                                            ck_name = 'dev'
+                                            # f_width = 768
+                                            # f_height = 768
+                                        f_width = resolution[0]
+                                        f_height = resolution[1]
 
-                                    lora_weight = float(lora_weight)
-                                    pipeline.set_lora(lora_path, lora_weight=lora_weight)  
+                                        lora_weight = float(lora_weight)
+                                        pipeline.set_lora(lora_path, lora_weight=lora_weight)  
 
-                                    # 增加计时
-                                    start_time = time.perf_counter()
-                                    print("attr:{} seed:{}, guidance:{}, mu:{}, f_width:{}, f_height:{}, ck_name:{}, lora_weight:{}, attr_cate:{}, prompt:{}".format(attr, seed, guidance, mu, f_width, f_height, ck_name, lora_weight, attr_cate, prompt))
-                                    out_img = pipeline(
-                                        prompt=prompt,
-                                        controlnet_image=None,
-                                        width=f_width,
-                                        height=f_height,
-                                        guidance=guidance,
-                                        num_steps=50,
-                                        true_gs=4,
-                                        neg_prompt=neg_prompt,
-                                        timestep_to_start_cfg=200,
-                                        seed=seed,
-                                        callback=None,
-                                        cb_infos=None,
-                                        progress_len=95,
-                                        img_seq_len=mu
-                                    )
+                                        # 增加计时
+                                        start_time = time.perf_counter()
+                                        print("attr:{} seed:{}, guidance:{}, mu:{}, f_width:{}, f_height:{}, ck_name:{}, lora_weight:{}, attr_cate:{}, prompt:{}".format(attr, seed, guidance, mu, f_width, f_height, ck_name, lora_weight, attr_cate, prompt))
+                                        out_img = pipeline(
+                                            prompt=prompt,
+                                            controlnet_image=None,
+                                            width=f_width,
+                                            height=f_height,
+                                            guidance=guidance,
+                                            num_steps=50,
+                                            true_gs=4,
+                                            neg_prompt=neg_prompt,
+                                            timestep_to_start_cfg=200,
+                                            seed=seed,
+                                            callback=None,
+                                            cb_infos=None,
+                                            progress_len=95,
+                                            img_seq_len=mu
+                                        )
 
-                                    prompt_tag = "1grid" if p_index == 0 else "4grid"
-                                    outfile = f"{args.save_imgs_dir}/ck_name@{ck_name}_lora_weight@{lora_weight}_promptTag@{prompt_tag}_attr_cate@{attr_cate}_attr@{attr}_seed@{seed}_guide@{guidance}_mu@{mu}_resolution@{f_height}*{f_width}_comp@{comp}.jpg"
-                                    out_img.save(outfile, quality=95)
-                                    end_time = time.perf_counter()
+                                        prompt_tag = "1grid" if p_index == 0 else "4grid"
+                                        outfile = f"{args.save_imgs_dir}/ck_name@{ck_name}_lora_weight@{lora_weight}_promptTag@{prompt_tag}_attr_cate@{attr_cate}_attr@{attr}_seed@{seed}_guide@{guidance}_mu@{mu}_resolution@{f_height}*{f_width}_comp@{comp}.jpg"
+                                        out_img.save(outfile, quality=95)
+                                        end_time = time.perf_counter()
 
-                                    elapsed_time_ms = (end_time - start_time) * 1000
-                                    print(f"Elapsed time: {elapsed_time_ms} ms")
+                                        elapsed_time_ms = (end_time - start_time) * 1000
+                                        print(f"Elapsed time: {elapsed_time_ms} ms")
