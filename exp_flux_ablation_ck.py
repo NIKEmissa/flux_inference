@@ -43,20 +43,22 @@ if __name__ == "__main__":
     post_prompt = 'Ensure that the design elements, patterns, and colors of the clothing are consistent in the four postures, and the only difference is the visual angle.'
     comp = 'simple'
 
-    attr_yml_files = ['/data/xd/MyCode/Project/exp_vs/data/yml/neckline.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/collar.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/cuff.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/front_closure_style.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_closure.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_length.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/pocket.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve_length.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/shirt_hem.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/shoulder.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/silhouette.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve.yml']
+    attr_yml_files = [
+                    None,
+                    './data/yml/neckline.yml',
+                    './data/yml/collar.yml',
+                    './data/yml/cuff.yml',
+                    './data/yml/front_closure_style.yml',
+                    './data/yml/garment_closure.yml',
+                    './data/yml/garment_length.yml',
+                    './data/yml/pocket.yml',
+                    './data/yml/sleeve_length.yml',
+                    './data/yml/shirt_hem.yml',
+                    './data/yml/shoulder.yml',
+                    './data/yml/silhouette.yml',
+                    './data/yml/sleeve.yml']
 
-    lora_path = '/data/xd/MyCode/Project/exp_vs/weights/lora/model12/model12_ck14000.safetensors'
+    lora_path = './weights/lora/model12/model12_ck14000.safetensors'
     resolutions = [[1024, 1024], [512, 512]]
 
     for attr_yml_file in [attr_yml_files[args.attr_index]]:
@@ -73,7 +75,6 @@ if __name__ == "__main__":
                 if args.mode == 'exp_dev':              
                     guidances = [3.5] if p_index == 0 else [2.5]
                     img_seq_lens = [1.15] if p_index == 0 else [0.4]
-                    width, height = 768, 768
                     seeds = [
                         5456756856,
                         9876543210,
@@ -103,6 +104,10 @@ if __name__ == "__main__":
                                             # f_height = 768
                                         f_width = resolution[0]
                                         f_height = resolution[1]
+
+                                        if p_index == 1:
+                                            f_width = f_width * 2
+                                            f_height = f_height * 2
 
                                         lora_weight = float(lora_weight)
                                         pipeline.set_lora(lora_path, lora_weight=lora_weight)  
