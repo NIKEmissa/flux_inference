@@ -58,79 +58,82 @@ if __name__ == "__main__":
 
     lora_path = './weights/lora/model12/model12_ck14000.safetensors'
 
-    for attr_yml_file in [attr_yml_files[args.attr_index]]:
-        attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
+    seeds = [
+        5456756856,
+        9876543210,
+        192837465,
+        765432198,
+        876543219,
+        654321987,
+        123098765,
+        456789123,
+        789456123,
+        147852369
+    ]
+    for seed in seeds:
 
-        for attr in YMLDataIterator(attr_yml_file, 4):
-            attr = attr.replace('/', ' ')
-            
-            shirt_hem = 'asymmetrical hemline'
-            shoulder = 'regular shoulders'
-            neckline = 'square neckline'
-            collar = 'narrow, flat collar'
-            sleeve = 'long sleeves'
-            sleeve_length = 'long'
-            cuff = 'slightly flared cuffs'
-            front_closure_style = 'pullover style'
-            garment_closure = 'easy wear'
-            garment_length = 'falls just below the hips'
-            pocket = 'no pockets'
-            silhouette = 'dynamic silhouette'
+        for attr_yml_file in [attr_yml_files[args.attr_index]]:
+            attr_cate = attr_yml_file.split('/')[-1].split('.')[0] if int(seed) != 0 else 'original'
 
-            if attr.lower() == 'other': continue
-            if attr_cate == 'shirt_hem':
-                shirt_hem = attr
-            elif attr_cate == 'shoulder':
-                shoulder = attr
-            elif attr_cate == 'neckline':
-                neckline = attr
-            elif attr_cate == 'collar':
-                collar = attr
-            elif attr_cate == 'sleeve':
-                sleeve = attr
-            elif attr_cate == 'sleeve_length':
-                sleeve_length = attr
-            elif attr_cate == 'cuff':
-                cuff = attr                                
-            elif attr_cate == 'front_closure_style':
-                front_closure_style = attr
-            elif attr_cate == 'garment_closure':
-                garment_closure = attr
-            elif attr_cate == 'silhouette':
-                silhouette = attr
-            elif attr_cate == 'garment_length':
-                garment_length = attr
-            elif attr_cate == 'pocket':
-                pocket = attr
+            for attr in YMLDataIterator(attr_yml_file, 4):
+                attr = attr.replace('/', ' ')
+                
+                shirt_hem = 'asymmetrical hemline'
+                shoulder = 'regular shoulders'
+                neckline = 'square neckline'
+                collar = 'narrow, flat collar'
+                sleeve = 'long sleeves'
+                sleeve_length = 'long'
+                cuff = 'slightly flared cuffs'
+                front_closure_style = 'pullover style'
+                garment_closure = 'easy wear'
+                garment_length = 'falls just below the hips'
+                pocket = 'no pockets'
+                silhouette = 'dynamic silhouette'
 
-            # prompt = f"In a clean and minimal setting, a full-body front view of a Chinese girl model, is presented.The model is wearing a {attr} T-shirt."
-            # prompt = f"""
-            #     The image presents an indoor studio setting with a minimalist background. The backdrop is solid white, enhancing the focus on the model and the outfit without any distractions from additional props or accessories. The model is wearing a fitted long-sleeve top with an asymmetrical hemline. The top features regular shoulders and a square neckline, which is notably wide, accentuating the collarbone. The sleeves are long and slightly flared at the cuffs, adding a touch of elegance to the overall design. The side seams include gathered details, providing a unique texture and fit, while the hemline is angled, creating a dynamic silhouette. The garment is made from a soft stretch fabric, ensuring comfort and ease of movement. This fabric has a smooth texture with a slight sheen, reflecting light softly. The primary color is white, while the graphic print on the front features a rustic brown with vintage lettering that reads ""Cafe Racer Vintage,"" adorned with stars and a dreamy slogan, adding a playful element to the design. The model is a South Asian woman, approximately 20 years old, with long, wavy dark hair. Her skin tone is medium, and she possesses a petite stature. She stands in a slight pose, with her left arm extended elegantly, showcasing the top's details. Her expression is thoughtful, enhancing the overall aesthetic of the look. The makeup is natural, featuring a light foundation and soft pink lip color, complementing the outfit without overpowering it. The lighting is soft and diffused, emphasizing the model's features and the top's design without harsh shadows. The composition centers on the model, ensuring the garment remains the focal point, showcasing the graphic print, unique neckline, and flared sleeves effectively. Overall, this presentation highlights the top's key features: the asymmetrical design, gathered side details, and the vintage graphic print.            
-            # """
-            prompt = f"The image presents an indoor studio setting with a minimalist background. The backdrop is solid white, enhancing the focus on the model and the outfit without any distractions from additional props or accessories. The model is wearing a fitted long-sleeve top with an {shirt_hem} **(shirt_hem)**. The top features {shoulder} **(shoulder)** and a {neckline} **(neckline)**. The top also includes a narrow, {collar} **(collar)** that adds subtle structure to the neckline. The {sleeve} sleeves **(sleeve)** are {sleeve_length} **(sleeve_length)** and is a {cuff} **(cuff)**, adding a touch of elegance to the overall design. The front of the garment has no visible buttons or zippers, indicating a {front_closure_style} front closure **(front_closure_style)** for {garment_closure} **(garment_closure)**. The side seams include gathered details, providing a unique texture and fit, while the hemline is angled, creating a {silhouette} **(silhouette)**. The garment length **(garment_length)** is {garment_length}, offering a comfortable and flattering fit, contributing to the hip-length cut. There are {pocket} **(pocket)** on the garment, maintaining a sleek and minimalist appearance. The garment is made from a soft stretch fabric, ensuring comfort and ease of movement. This fabric has a smooth texture with a slight sheen, reflecting light softly. The primary color is white, while the graphic print on the front features a rustic brown with vintage lettering that reads 'Cafe Racer Vintage', adorned with stars and a dreamy slogan, adding a playful element to the design. The model is a South Asian woman, approximately 20 years old, with long, wavy dark hair. Her skin tone is medium, and she possesses a petite stature. She stands in a slight pose, with her left arm extended elegantly, showcasing the top's details. Her expression is thoughtful, enhancing the overall aesthetic of the look. The makeup is natural, featuring a light foundation and soft pink lip color, complementing the outfit without overpowering it. The lighting is soft and diffused, emphasizing the model's features and the top's design without harsh shadows. The composition centers on the model, ensuring the garment remains the focal point, showcasing the graphic print, unique neckline, and flared sleeves effectively. Overall, this presentation highlights the top's key features: the asymmetrical design, gathered side details, vintage graphic print."
+                if attr.lower() == 'other': continue
+                if attr_cate == 'shirt_hem':
+                    shirt_hem = attr
+                elif attr_cate == 'shoulder':
+                    shoulder = attr
+                elif attr_cate == 'neckline':
+                    neckline = attr
+                elif attr_cate == 'collar':
+                    collar = attr
+                elif attr_cate == 'sleeve':
+                    sleeve = attr
+                elif attr_cate == 'sleeve_length':
+                    sleeve_length = attr
+                elif attr_cate == 'cuff':
+                    cuff = attr                                
+                elif attr_cate == 'front_closure_style':
+                    front_closure_style = attr
+                elif attr_cate == 'garment_closure':
+                    garment_closure = attr
+                elif attr_cate == 'silhouette':
+                    silhouette = attr
+                elif attr_cate == 'garment_length':
+                    garment_length = attr
+                elif attr_cate == 'pocket':
+                    pocket = attr
 
-            # for p_index, prompt in enumerate([prompt, f"{pre_prompt} {prompt} {post_prompt}"]):
-            for p_index, prompt in enumerate([f"{pre_prompt} {prompt} {post_prompt}"]):
+                # prompt = f"In a clean and minimal setting, a full-body front view of a Chinese girl model, is presented.The model is wearing a {attr} T-shirt."
+                # prompt = f"""
+                #     The image presents an indoor studio setting with a minimalist background. The backdrop is solid white, enhancing the focus on the model and the outfit without any distractions from additional props or accessories. The model is wearing a fitted long-sleeve top with an asymmetrical hemline. The top features regular shoulders and a square neckline, which is notably wide, accentuating the collarbone. The sleeves are long and slightly flared at the cuffs, adding a touch of elegance to the overall design. The side seams include gathered details, providing a unique texture and fit, while the hemline is angled, creating a dynamic silhouette. The garment is made from a soft stretch fabric, ensuring comfort and ease of movement. This fabric has a smooth texture with a slight sheen, reflecting light softly. The primary color is white, while the graphic print on the front features a rustic brown with vintage lettering that reads ""Cafe Racer Vintage,"" adorned with stars and a dreamy slogan, adding a playful element to the design. The model is a South Asian woman, approximately 20 years old, with long, wavy dark hair. Her skin tone is medium, and she possesses a petite stature. She stands in a slight pose, with her left arm extended elegantly, showcasing the top's details. Her expression is thoughtful, enhancing the overall aesthetic of the look. The makeup is natural, featuring a light foundation and soft pink lip color, complementing the outfit without overpowering it. The lighting is soft and diffused, emphasizing the model's features and the top's design without harsh shadows. The composition centers on the model, ensuring the garment remains the focal point, showcasing the graphic print, unique neckline, and flared sleeves effectively. Overall, this presentation highlights the top's key features: the asymmetrical design, gathered side details, and the vintage graphic print.            
+                # """
+                # prompt = f"The image presents an indoor studio setting with a minimalist background. The backdrop is solid white, enhancing the focus on the model and the outfit without any distractions from additional props or accessories. The model is wearing a fitted long-sleeve top with an {shirt_hem} **(shirt_hem)**. The top features {shoulder} **(shoulder)** and a {neckline} **(neckline)**. The top also includes a narrow, {collar} **(collar)** that adds subtle structure to the neckline. The {sleeve} sleeves **(sleeve)** are {sleeve_length} **(sleeve_length)** and is a {cuff} **(cuff)**, adding a touch of elegance to the overall design. The front of the garment has no visible buttons or zippers, indicating a {front_closure_style} front closure **(front_closure_style)** for {garment_closure} **(garment_closure)**. The side seams include gathered details, providing a unique texture and fit, while the hemline is angled, creating a {silhouette} **(silhouette)**. The garment length **(garment_length)** is {garment_length}, offering a comfortable and flattering fit, contributing to the hip-length cut. There are {pocket} **(pocket)** on the garment, maintaining a sleek and minimalist appearance. The garment is made from a soft stretch fabric, ensuring comfort and ease of movement. This fabric has a smooth texture with a slight sheen, reflecting light softly. The primary color is white, while the graphic print on the front features a rustic brown with vintage lettering that reads 'Cafe Racer Vintage', adorned with stars and a dreamy slogan, adding a playful element to the design. The model is a South Asian woman, approximately 20 years old, with long, wavy dark hair. Her skin tone is medium, and she possesses a petite stature. She stands in a slight pose, with her left arm extended elegantly, showcasing the top's details. Her expression is thoughtful, enhancing the overall aesthetic of the look. The makeup is natural, featuring a light foundation and soft pink lip color, complementing the outfit without overpowering it. The lighting is soft and diffused, emphasizing the model's features and the top's design without harsh shadows. The composition centers on the model, ensuring the garment remains the focal point, showcasing the graphic print, unique neckline, and flared sleeves effectively. Overall, this presentation highlights the top's key features: the asymmetrical design, gathered side details, vintage graphic print."
+                prompt = f"The image presents an indoor studio setting with a minimalist background. The backdrop is solid white, enhancing the focus on the model and the outfit without any distractions from additional props or accessories. The model is wearing a t-shirt with an {shirt_hem} hem of the top. The top features {shoulder} shoulder and a {neckline} neckline. The top also includes a {collar} collar. The {sleeve} sleeves are with {sleeve_length} sleeve_length and is a {cuff} cuff, adding a touch of elegance to the overall design. The front of the garment is indicating a {front_closure_style} front closure for {garment_closure} garment_closure. The cloth is a {silhouette} silhouette. The garment length is {garment_length}. There are {pocket} pocket on the garment, maintaining a sleek and minimalist appearance. The garment is made from a soft stretch fabric, ensuring comfort and ease of movement. This fabric has a smooth texture with a slight sheen, reflecting light softly. The primary color is white, while the graphic print on the front features a rustic brown with vintage lettering that reads 'Cafe Racer Vintage', adorned with stars and a dreamy slogan, adding a playful element to the design. The model is a South Asian woman, approximately 20 years old, with long, wavy dark hair. Her skin tone is medium, and she possesses a petite stature. She stands in a slight pose, with her left arm extended elegantly, showcasing the top's details. Her expression is thoughtful, enhancing the overall aesthetic of the look. The makeup is natural, featuring a light foundation and soft pink lip color, complementing the outfit without overpowering it. The lighting is soft and diffused, emphasizing the model's features and the top's design without harsh shadows. The composition centers on the model, ensuring the garment remains the focal point, showcasing the graphic print, unique neckline, and flared sleeves effectively. "
 
-                if args.mode == 'exp_dev':              
-                    guidances = [3.5] if p_index == 0 else [2.5]
-                    img_seq_lens = [1.15] if p_index == 0 else [0.4]
-                    width, height = 768, 768
-                    seeds = [
-                        5456756856,
-                        9876543210,
-                        192837465,
-                        765432198,
-                        876543219,
-                        654321987,
-                        123098765,
-                        456789123,
-                        789456123,
-                        147852369
-                    ]
-                    # lora_weights = ['0', '0.9']
-                    lora_weights = ['0.9']
-                    for seed in seeds:
+                # for p_index, prompt in enumerate([prompt, f"{pre_prompt} {prompt} {post_prompt}"]):
+                for p_index, prompt in enumerate([f"{pre_prompt} {prompt} {post_prompt}"]):
+
+                    if args.mode == 'exp_dev':              
+                        guidances = [3.5] if p_index == 0 else [2.5]
+                        img_seq_lens = [1.15] if p_index == 0 else [0.4]
+                        width, height = 768, 768
+
+                        # lora_weights = ['0', '0.9']
+                        lora_weights = ['0.9']
                         for guidance in guidances:
                             for img_seq_len in img_seq_lens:    
                                 mu = img_seq_len
