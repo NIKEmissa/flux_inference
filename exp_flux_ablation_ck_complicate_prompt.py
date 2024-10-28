@@ -61,7 +61,7 @@ if __name__ == "__main__":
     for attr_yml_file in [attr_yml_files[attr_index]]:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
 
-        for attr in YMLDataIterator(attr_yml_file, 11):
+        for attr in YMLDataIterator(attr_yml_file, 4):
             attr = attr.replace('/', ' ')
             
             shirt_hem = 'asymmetrical hemline'
