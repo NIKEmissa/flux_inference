@@ -65,7 +65,7 @@ if __name__ == "__main__":
     for attr_yml_file in [attr_yml_files[args.attr_index]]:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
 
-        for attr in YMLDataIterator(attr_yml_file, 11):
+        for attr in YMLDataIterator(attr_yml_file, 4):
             attr = attr.replace('/', ' ')
             if attr.lower() == 'other': continue
             prompt = f"In a clean and minimal setting, a full-body front view of a Chinese girl model, is presented.The model is wearing a {attr} T-shirt."
