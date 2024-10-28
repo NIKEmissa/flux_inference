@@ -28,6 +28,7 @@ if __name__ == "__main__":
     parser.add_argument('--device', type=str, default='5,7')
     parser.add_argument('--save_imgs_dir', type=str, default='./test/ablation')
     parser.add_argument('--mode', type=str, default='exp_dev')
+    parser.add_argument('--attr_index', type=int, default=0)
 
     args = parser.parse_args()
     args.save_imgs_dir = f"{args.save_imgs_dir}/{args.mode}_1027"
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
     lora_path = './weights/lora/model12/model12_ck14000.safetensors'
 
-    for attr_yml_file in attr_yml_files:
+    for attr_yml_file in [attr_yml_files[attr_index]]:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
 
         for attr in YMLDataIterator(attr_yml_file, 11):
