@@ -42,20 +42,20 @@ if __name__ == "__main__":
     post_prompt = 'Ensure that the design elements, patterns, and colors of the clothing are consistent in the four postures, and the only difference is the visual angle.'
     comp = 'complicated'
 
-    attr_yml_files = ['/data/xd/MyCode/Project/exp_vs/data/yml/neckline.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/collar.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/cuff.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/front_closure_style.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_closure.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/garment_length.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/pocket.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve_length.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/shirt_hem.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/shoulder.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/silhouette.yml',
-                    '/data/xd/MyCode/Project/exp_vs/data/yml/sleeve.yml']
+    attr_yml_files = ['./data/yml/neckline.yml',
+                    './data/yml/collar.yml',
+                    './data/yml/cuff.yml',
+                    './data/yml/front_closure_style.yml',
+                    './data/yml/garment_closure.yml',
+                    './data/yml/garment_length.yml',
+                    './data/yml/pocket.yml',
+                    './data/yml/sleeve_length.yml',
+                    './data/yml/shirt_hem.yml',
+                    './data/yml/shoulder.yml',
+                    './data/yml/silhouette.yml',
+                    './data/yml/sleeve.yml']
 
-    lora_path = '/data/xd/MyCode/Project/exp_vs/weights/lora/model12/model12_ck14000.safetensors'
+    lora_path = './weights/lora/model12/model12_ck14000.safetensors'
 
     for attr_yml_file in attr_yml_files:
         attr_cate = attr_yml_file.split('/')[-1].split('.')[0]
