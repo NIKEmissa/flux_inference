@@ -31,7 +31,6 @@ def generate_image(pipeline, prompt_info, args):
             prompt_info['f_width'], prompt_info['f_height'], prompt_info['ck_name'], prompt_info['lora_weight'],
             prompt_info['attr_cate'], prompt_info['prompt']
         )
-        return prompt_info
         out_img = pipeline(
             prompt=prompt_info['prompt'],
             controlnet_image=None,
@@ -49,7 +48,25 @@ def generate_image(pipeline, prompt_info, args):
             img_seq_len=prompt_info['img_seq_len']
         )
 
-        filename = f"ck_name@{prompt_info['ck_name']}_lora_weight@{prompt_info['lora_weight']}_promptTag@{prompt_info['prompt_tag']}_attr_cate@{prompt_info['attr_cate']}_attr@{prompt_info['attr']}_seed@{prompt_info['seed']}_guide@{prompt_info['guidance']}_img_seq_len@{prompt_info['img_seq_len']}_resolution@{prompt_info['f_height']}*{prompt_info['f_width']}_comp@{prompt_info['comp']}.jpg"
+        # 定义辅助函数来处理文件名中的变量
+        def sanitize_filename_component(component):
+            """替换字符串中的 '_' 和 '/' 为 '-'，并将组件转换为字符串。"""
+            return str(component).replace('_', '-').replace('/', '-')
+
+        filename = (
+            f"ck_name@{sanitize_filename_component(prompt_info['ck_name'])}"
+            f"_lora_weight@{sanitize_filename_component(prompt_info['lora_weight'])}"
+            f"_promptTag@{sanitize_filename_component(prompt_info['prompt_tag'])}"
+            f"_attr_cate@{sanitize_filename_component(prompt_info['attr_cate'])}"
+            f"_attr@{sanitize_filename_component(prompt_info['attr'])}"
+            f"_seed@{sanitize_filename_component(prompt_info['seed'])}"
+            f"_guide@{sanitize_filename_component(prompt_info['guidance'])}"
+            f"_img_seq_len@{sanitize_filename_component(prompt_info['img_seq_len'])}"
+            f"_resolution@{sanitize_filename_component(prompt_info['f_height'])}"
+            f"*{sanitize_filename_component(prompt_info['f_width'])}"
+            f"_comp@{sanitize_filename_component(prompt_info['comp'])}.jpg"
+        )
+
         outfile = os.path.join(args.save_imgs_dir, filename)
         out_img.save(outfile, quality=95)
         end_time = time.perf_counter()
@@ -58,6 +75,7 @@ def generate_image(pipeline, prompt_info, args):
         logger.info(f"耗时: {elapsed_time_ms} 毫秒")
     except Exception as e:
         logger.error(f"生成图像时发生错误：{e}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='使用 XFluxPipeline 生成图像的脚本。')
