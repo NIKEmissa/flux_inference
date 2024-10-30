@@ -10,9 +10,11 @@ import pandas as pd
 
 class YMLDataIterator:
     """迭代器，用于遍历 YML 和 CSV 文件，跳过指定的表头行数。"""
-    def __init__(self, file_path, header_lines=4):
+    def __init__(self, file_path, header_lines=4, start_row=None, end_row=None):
         self.file_path = file_path
         self.header_lines = header_lines
+        self.start_row = start_row
+        self.end_row = end_row
 
     def __iter__(self):
         if self.file_path.endswith('.yml'):
@@ -25,8 +27,14 @@ class YMLDataIterator:
         elif self.file_path.endswith('.csv'):
             # 读取 CSV 文件到 DataFrame
             df = pd.read_csv(self.file_path)
-            # 遍历每一行，组合 Keyword 和 category 列
-            for _, row in df.iterrows():
+
+            # 确定合法的起始和结束行
+            start_row = max(0, self.start_row) if self.start_row is not None else 0
+            end_row = min(len(df), self.end_row) if self.end_row is not None else len(df)
+
+            # 遍历指定范围内的每一行，组合 Keyword 和 category 列
+            for idx in range(start_row, end_row):
+                row = df.iloc[idx]
                 keyword = row['Keyword']
                 category = row['category']
                 yield f"{keyword}, which is the attribute of {category}"
@@ -45,7 +53,7 @@ def generate_image(pipeline, prompt_info, args):
             prompt_info['f_width'], prompt_info['f_height'], prompt_info['ck_name'], prompt_info['lora_weight'],
             prompt_info['attr_cate'], prompt_info['prompt']
         )
-        # return 
+        
         out_img = pipeline(
             prompt=prompt_info['prompt'],
             controlnet_image=None,
@@ -91,7 +99,6 @@ def generate_image(pipeline, prompt_info, args):
     except Exception as e:
         logger.error(f"生成图像时发生错误：{e}")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='使用 XFluxPipeline 生成图像的脚本。')
     parser.add_argument('--base_model_path', type=str, default='./weights/flux-dev', help='基础模型的路径。')
@@ -106,9 +113,12 @@ if __name__ == "__main__":
     parser.add_argument('--timestep_to_start_cfg', type=int, default=200, help='开始 CFG 的时间步。')
     parser.add_argument('--progress_len', type=int, default=95, help='进度长度。')
     parser.add_argument('--save_log_dir', type=str, default='./log')
+    parser.add_argument('--save_log_name', type=str, default='log.txt')
+    parser.add_argument('--start_row', type=int, help='CSV 文件遍历的起始行。')
+    parser.add_argument('--end_row', type=int, help='CSV 文件遍历的结束行。')
     args = parser.parse_args()
 
-    tailfix = '1028_wq_lora'
+    tailfix = '1030_wq_lora'
     args.save_imgs_dir = os.path.join(args.save_imgs_dir, f"{args.mode}_{tailfix}")
     os.makedirs(args.save_imgs_dir, exist_ok=True)
 
@@ -156,7 +166,7 @@ if __name__ == "__main__":
         os.path.join(DATA_DIR, 'shoulder.yml'),
         os.path.join(DATA_DIR, 'silhouette.yml'),
         os.path.join(DATA_DIR, 'sleeve.yml'),
-        "/data/xd/MyCode/Misc/filter_labels.csv"
+        "/data/xd/MyCode/Misc/filter_labels2.csv"
     ]
 
     # 验证 attr_index
@@ -204,7 +214,7 @@ if __name__ == "__main__":
     ]
     lora_weights = [0.0, 0.9]
 
-    for attr in YMLDataIterator(attr_yml_file, 4):
+    for attr in YMLDataIterator(attr_yml_file, 4, args.start_row, args.end_row):
         attr = attr.replace('/', ' ')
         if attr.lower() == 'other':
             continue
