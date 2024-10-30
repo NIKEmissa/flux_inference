@@ -2,22 +2,36 @@ import os
 import argparse
 import time
 import logging
+from datetime import datetime
 from itertools import product
 from src.flux.xflux_pipeline import XFluxPipeline
 
+import pandas as pd
+
 class YMLDataIterator:
-    """迭代器，用于遍历 YML 文件，跳过指定的表头行数。"""
+    """迭代器，用于遍历 YML 和 CSV 文件，跳过指定的表头行数。"""
     def __init__(self, file_path, header_lines=4):
         self.file_path = file_path
         self.header_lines = header_lines
 
     def __iter__(self):
-        # 打开文件并跳过表头行
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            for _ in range(self.header_lines):
-                next(file)
-            for line in file:
-                yield line.strip()
+        if self.file_path.endswith('.yml'):
+            # 打开 YML 文件并跳过表头行
+            with open(self.file_path, 'r', encoding='utf-8') as file:
+                for _ in range(self.header_lines):
+                    next(file)
+                for line in file:
+                    yield line.strip()
+        elif self.file_path.endswith('.csv'):
+            # 读取 CSV 文件到 DataFrame
+            df = pd.read_csv(self.file_path)
+            # 遍历每一行，组合 Keyword 和 category 列
+            for _, row in df.iterrows():
+                keyword = row['Keyword']
+                category = row['category']
+                yield f"{keyword}, which is the attribute of {category}"
+        else:
+            raise ValueError("不支持的文件格式")
 
 def generate_image(pipeline, prompt_info, args):
     """生成图像并保存，同时记录耗时和可能的错误。"""
@@ -31,6 +45,7 @@ def generate_image(pipeline, prompt_info, args):
             prompt_info['f_width'], prompt_info['f_height'], prompt_info['ck_name'], prompt_info['lora_weight'],
             prompt_info['attr_cate'], prompt_info['prompt']
         )
+        # return 
         out_img = pipeline(
             prompt=prompt_info['prompt'],
             controlnet_image=None,
@@ -140,7 +155,8 @@ if __name__ == "__main__":
         os.path.join(DATA_DIR, 'shirt_hem.yml'),
         os.path.join(DATA_DIR, 'shoulder.yml'),
         os.path.join(DATA_DIR, 'silhouette.yml'),
-        os.path.join(DATA_DIR, 'sleeve.yml')
+        os.path.join(DATA_DIR, 'sleeve.yml'),
+        "/data/xd/MyCode/Misc/filter_labels.csv"
     ]
 
     # 验证 attr_index
