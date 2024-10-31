@@ -180,6 +180,7 @@ if __name__ == "__main__":
     attr_cate = os.path.basename(attr_yml_file).split('.')[0]
 
     lora_path = './weights/lora/wangqiang_base_prompt/fashion_lora (9).safetensors'
+    lora_path = './weights/lora/model12/model12_ck14000.safetensors'
     resolutions = [[1024, 1024], [512, 512]]
 
     # 定义与 prompt_index 相关的参数
