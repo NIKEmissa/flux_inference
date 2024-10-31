@@ -118,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument('--end_row', type=int, help='CSV 文件遍历的结束行。')
     args = parser.parse_args()
 
-    tailfix = '1030_wq_lora'
+    tailfix = '1030_wq_lora_debug'
     args.save_imgs_dir = os.path.join(args.save_imgs_dir, f"{args.mode}_{tailfix}")
     os.makedirs(args.save_imgs_dir, exist_ok=True)
 
