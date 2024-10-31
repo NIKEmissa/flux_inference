@@ -166,7 +166,7 @@ if __name__ == "__main__":
         os.path.join(DATA_DIR, 'shoulder.yml'),
         os.path.join(DATA_DIR, 'silhouette.yml'),
         os.path.join(DATA_DIR, 'sleeve.yml'),
-        "/data/xd/MyCode/Misc/filter_labels2.csv"
+        "./filter_labels2.csv"
     ]
 
     # 验证 attr_index
